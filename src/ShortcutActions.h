@@ -34,6 +34,7 @@ public:
     QAction* currentScreenAction() const;
     QAction* activeWindowAction() const;
     QAction* regionAction() const;
+    QAction* clipboardRegionAction() const;
 
 private:
     ShortcutActions();

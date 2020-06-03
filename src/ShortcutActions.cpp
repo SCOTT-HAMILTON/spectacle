@@ -63,6 +63,11 @@ ShortcutActions::ShortcutActions() : mActions{nullptr, QString()}
         action->setObjectName(QStringLiteral("RectangularRegionScreenShot"));
         mActions.addAction(action->objectName(), action);
     }
+    {
+        QAction *action = new QAction(i18n("Capture Rectangular Region To Clipboard"));
+        action->setObjectName(QStringLiteral("ClipboardRectangularRegionScreenShot"));
+        mActions.addAction(action->objectName(), action);
+    }
 }
 
 KActionCollection* ShortcutActions::shortcutActions()
@@ -98,4 +103,9 @@ QAction* ShortcutActions::activeWindowAction() const
 QAction* ShortcutActions::regionAction() const
 {
     return mActions.action(4);
+}
+
+QAction* ShortcutActions::clipboardRegionAction() const
+{
+    return mActions.action(5);
 }

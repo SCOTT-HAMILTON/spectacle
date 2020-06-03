@@ -28,6 +28,7 @@ int main(int argc, char **argv)
     QList<QKeySequence> launchKey;
     QList<QKeySequence> fullScreenKey;
     QList<QKeySequence> regionKey;
+    QList<QKeySequence> regionClipboardKey;
     QList<QKeySequence> activeWindowKey;
     QStringList ids;
     if (found_spectacle) {
@@ -47,6 +48,8 @@ int main(int argc, char **argv)
                 activeWindowKey = shortcut;
             } else if (method == QLatin1String("RectangularRegion")) {
                 regionKey = shortcut;
+            } else if (method == QLatin1String("ClipboardRectangularRegion")) {
+                regionClipboardKey = shortcut;
             }
             // Delete the groups from khotkeysrc
             khotkeysrc.deleteGroup(groupName);
@@ -104,11 +107,15 @@ int main(int argc, char **argv)
     KGlobalAccel::self()->setDefaultShortcut(activeWindowAction, {Qt::META + Qt::Key_Print});
     QAction* regionAction = shortCutActions.action(QStringLiteral("RectangularRegionScreenShot"));
     KGlobalAccel::self()->setDefaultShortcut(regionAction, {Qt::META + Qt::SHIFT + Qt::Key_Print});
+
+    QAction* regionClipboardAction = shortCutActions.action(QStringLiteral("ClipboardRectangularRegionScreenShot"));
+    KGlobalAccel::self()->setDefaultShortcut(regionClipboardAction, {Qt::CTRL + Qt::SHIFT + Qt::Key_Print});
     // Finally reinstate the old shortcuts
     if (found_spectacle) {
         KGlobalAccel::self()->setShortcut(openAction, launchKey, KGlobalAccel::NoAutoloading);
         KGlobalAccel::self()->setShortcut(fullScreenAction, fullScreenKey, KGlobalAccel::NoAutoloading);
         KGlobalAccel::self()->setShortcut(activeWindowAction, activeWindowKey, KGlobalAccel::NoAutoloading);
         KGlobalAccel::self()->setShortcut(regionAction, regionKey, KGlobalAccel::NoAutoloading);
+        KGlobalAccel::self()->setShortcut(regionClipboardAction, regionClipboardKey, KGlobalAccel::NoAutoloading);
     }
 }

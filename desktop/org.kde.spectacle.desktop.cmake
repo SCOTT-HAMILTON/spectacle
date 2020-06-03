@@ -145,7 +145,7 @@ Icon=spectacle
 Type=Application
 Terminal=false
 StartupNotify=false
-Actions=FullScreenScreenShot;CurrentMonitorScreenShot;ActiveWindowScreenShot;RectangularRegionScreenShot;
+Actions=FullScreenScreenShot;CurrentMonitorScreenShot;ActiveWindowScreenShot;RectangularRegionScreenShot;ClipboardRectangularRegionScreenShot;
 X-DBUS-StartupType=Multi
 X-DBUS-ServiceName=org.kde.Spectacle
 X-KDE-Shortcuts=Print
@@ -321,3 +321,9 @@ Name[zh_CN]=截取矩形区域
 Name[zh_TW]=擷取矩形區域
 Exec=@QtBinariesDir@/qdbus org.kde.Spectacle / RectangularRegion true
 X-KDE-Shortcuts=Meta+Shift+Print
+
+[Desktop Action ClipboardRectangularRegionScreenShot]
+Name=Capture Rectangular Region To Clipboard
+Name[fr]=Capturer une région rectangulaire dans le presse-papier
+Exec=@QtBinariesDir@/qdbus org.kde.Spectacle / ClipboardRectangularRegion true
+X-KDE-Shortcuts=Ctrl+Shift+Print

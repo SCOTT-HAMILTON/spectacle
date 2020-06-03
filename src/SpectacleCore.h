@@ -80,6 +80,7 @@ class SpectacleCore: public QObject
     void doStartDragAndDrop();
     void doNotify(const QUrl &theSavedAt);
     void doCopyPath(const QUrl &savedAt);
+    void setCopyToClipboard(bool theCopyToClipboard);
 
     private:
 

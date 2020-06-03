@@ -62,3 +62,9 @@ Q_NOREPLY void SpectacleDBusAdapter::RectangularRegion(bool includeMousePointer)
 {
     parent()->takeNewScreenshot(Spectacle::CaptureMode::RectangularRegion, 0, includeMousePointer, false);
 }
+
+Q_NOREPLY void SpectacleDBusAdapter::ClipboardRectangularRegion(bool includeMousePointer)
+{
+    parent()->setCopyToClipboard(true);
+    parent()->takeNewScreenshot(Spectacle::CaptureMode::RectangularRegion, 0, includeMousePointer, false);
+}

@@ -140,6 +140,8 @@ void SpectacleCore::setUpShortcuts()
 
     KGlobalAccel::self()->setGlobalShortcut(ShortcutActions::self()->regionAction(), Qt::META + Qt::SHIFT + Qt::Key_Print);
 
+    KGlobalAccel::self()->setGlobalShortcut(ShortcutActions::self()->clipboardRegionAction(), Qt::CTRL + Qt::SHIFT + Qt::Key_Print);
+
     KGlobalAccel::self()->setGlobalShortcut(ShortcutActions::self()->currentScreenAction(), QList<QKeySequence>());
 }
 
@@ -377,6 +379,11 @@ void SpectacleCore::doCopyPath(const QUrl &savedAt)
     if (Settings::copySaveLocation()) {
         qApp->clipboard()->setText(savedAt.toLocalFile());
     }
+}
+
+void SpectacleCore::setCopyToClipboard(bool theCopyToClipboard)
+{
+       mCopyToClipboard = theCopyToClipboard;
 }
 
 void SpectacleCore::doStartDragAndDrop()
