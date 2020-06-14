@@ -279,7 +279,7 @@ Name[zh_TW]=擷取作用中的視窗
 Exec=@QtBinariesDir@/qdbus org.kde.Spectacle / ActiveWindow true false
 X-KDE-Shortcuts=Meta+Print
 
-[Desktop Action ActiveWindowScreenShot]
+[Desktop Action ClipboardActiveWindowScreenShot]
 Name=Capture Active Window
 Name[fr]=Capturer la fenêtre active dans le presse-papier
 Exec=@QtBinariesDir@/qdbus org.kde.Spectacle / ClipboardActiveWindow true false
