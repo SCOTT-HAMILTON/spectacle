@@ -65,6 +65,25 @@
             </doc:doc>
         </method>
 
+	<method name="ClipboardActiveWindow">
+            <arg name="includeWindowDecorations" direction="in" type="b">
+                <doc:doc>
+                    <doc:summary>Whether to include the window titlebars and frames.</doc:summary>
+                </doc:doc>
+            </arg>
+            <arg name="includeMousePointer" direction="in" type="b">
+                <doc:doc>
+                    <doc:summary>Whether to include an image of the mouse pointer.</doc:summary>
+                </doc:doc>
+            </arg>
+            <doc:doc>
+                <doc:description>
+                    <doc:para>Takes a screenshot of the window that currently has window focus and saves it to clipboard.</doc:para>
+                    <doc:para>If Spectacle was started via D-Bus, it takes a screenshot in the background without spawning the GUI and exits after the shot has been taken.</doc:para>
+                </doc:description>
+            </doc:doc>
+        </method>
+
         <method name="WindowUnderCursor">
             <arg name="includeWindowDecorations" direction="in" type="b">
                 <doc:doc>

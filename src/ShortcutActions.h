@@ -33,6 +33,7 @@ public:
     QAction* fullScreenAction() const;
     QAction* currentScreenAction() const;
     QAction* activeWindowAction() const;
+    QAction* clipboardActiveWindowAction() const;
     QAction* regionAction() const;
     QAction* clipboardRegionAction() const;
 

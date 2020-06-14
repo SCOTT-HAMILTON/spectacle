@@ -53,6 +53,12 @@ Q_NOREPLY void SpectacleDBusAdapter::ActiveWindow(bool includeWindowDecorations,
     parent()->takeNewScreenshot(Spectacle::CaptureMode::ActiveWindow, 0, includeMousePointer, includeWindowDecorations);
 }
 
+Q_NOREPLY void SpectacleDBusAdapter::ClipboardActiveWindow(bool includeWindowDecorations, bool includeMousePointer)
+{
+    parent()->setCopyToClipboard(true);
+    parent()->takeNewScreenshot(Spectacle::CaptureMode::ActiveWindow, 0, includeMousePointer, includeWindowDecorations);
+}
+
 Q_NOREPLY void SpectacleDBusAdapter::WindowUnderCursor(bool includeWindowDecorations, bool includeMousePointer)
 {
     parent()->takeNewScreenshot(Spectacle::CaptureMode::WindowUnderCursor, 0, includeMousePointer, includeWindowDecorations);

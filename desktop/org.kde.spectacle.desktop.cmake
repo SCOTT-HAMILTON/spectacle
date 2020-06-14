@@ -145,7 +145,7 @@ Icon=spectacle
 Type=Application
 Terminal=false
 StartupNotify=false
-Actions=FullScreenScreenShot;CurrentMonitorScreenShot;ActiveWindowScreenShot;RectangularRegionScreenShot;ClipboardRectangularRegionScreenShot;
+Actions=FullScreenScreenShot;CurrentMonitorScreenShot;ActiveWindowScreenShot;ClipboardActiveWindowScreenShot;RectangularRegionScreenShot;ClipboardRectangularRegionScreenShot;
 X-DBUS-StartupType=Multi
 X-DBUS-ServiceName=org.kde.Spectacle
 X-KDE-Shortcuts=Print
@@ -278,6 +278,12 @@ Name[zh_CN]=截取活动窗口
 Name[zh_TW]=擷取作用中的視窗
 Exec=@QtBinariesDir@/qdbus org.kde.Spectacle / ActiveWindow true false
 X-KDE-Shortcuts=Meta+Print
+
+[Desktop Action ActiveWindowScreenShot]
+Name=Capture Active Window
+Name[fr]=Capturer la fenêtre active dans le presse-papier
+Exec=@QtBinariesDir@/qdbus org.kde.Spectacle / ClipboardActiveWindow true false
+X-KDE-Shortcuts=Ctrl+Alt+Print
 
 [Desktop Action RectangularRegionScreenShot]
 Name=Capture Rectangular Region

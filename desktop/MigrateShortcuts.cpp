@@ -30,6 +30,7 @@ int main(int argc, char **argv)
     QList<QKeySequence> regionKey;
     QList<QKeySequence> regionClipboardKey;
     QList<QKeySequence> activeWindowKey;
+    QList<QKeySequence> activeWindowClipboardKey;
     QStringList ids;
     if (found_spectacle) {
         for (int i = 1; i <= 4; ++i) {
@@ -46,6 +47,8 @@ int main(int argc, char **argv)
                 fullScreenKey = shortcut;
             } else if (method == QLatin1String("ActiveWindow")) {
                 activeWindowKey = shortcut;
+            } else if (method == QLatin1String("ClipboardActiveWindow")) {
+                activeWindowClipboardKey = shortcut;
             } else if (method == QLatin1String("RectangularRegion")) {
                 regionKey = shortcut;
             } else if (method == QLatin1String("ClipboardRectangularRegion")) {
@@ -94,6 +97,11 @@ int main(int argc, char **argv)
         shortCutActions.addAction(action->objectName(), action);
     }
     {
+        QAction *action = new QAction(i18n("Capture Active Window To Clipboard"));
+        action->setObjectName(QStringLiteral("ClipboardActiveWindowScreenShot"));
+        shortCutActions.addAction(action->objectName(), action);
+    }
+    {
         QAction *action = new QAction(i18n("Capture Rectangular Region"));
         action->setObjectName(QStringLiteral("RectangularRegionScreenShot"));
         shortCutActions.addAction(action->objectName(), action);
@@ -105,6 +113,8 @@ int main(int argc, char **argv)
     //QAction* currentScreenAction = shortCutActions.action(QStringLiteral("CurrentMonitorScreenShot"));
     QAction* activeWindowAction = shortCutActions.action(QStringLiteral("ActiveWindowScreenShot"));
     KGlobalAccel::self()->setDefaultShortcut(activeWindowAction, {Qt::META + Qt::Key_Print});
+    QAction* activeWindowClipboardAction = shortCutActions.action(QStringLiteral("ClipboardActiveWindowScreenShot"));
+    KGlobalAccel::self()->setDefaultShortcut(activeWindowClipboardAction, {Qt::CTRL + Qt::ALT + Qt::Key_Print});
     QAction* regionAction = shortCutActions.action(QStringLiteral("RectangularRegionScreenShot"));
     KGlobalAccel::self()->setDefaultShortcut(regionAction, {Qt::META + Qt::SHIFT + Qt::Key_Print});
 
@@ -115,6 +125,7 @@ int main(int argc, char **argv)
         KGlobalAccel::self()->setShortcut(openAction, launchKey, KGlobalAccel::NoAutoloading);
         KGlobalAccel::self()->setShortcut(fullScreenAction, fullScreenKey, KGlobalAccel::NoAutoloading);
         KGlobalAccel::self()->setShortcut(activeWindowAction, activeWindowKey, KGlobalAccel::NoAutoloading);
+        KGlobalAccel::self()->setShortcut(activeWindowClipboardAction, activeWindowClipboardKey, KGlobalAccel::NoAutoloading);
         KGlobalAccel::self()->setShortcut(regionAction, regionKey, KGlobalAccel::NoAutoloading);
         KGlobalAccel::self()->setShortcut(regionClipboardAction, regionClipboardKey, KGlobalAccel::NoAutoloading);
     }

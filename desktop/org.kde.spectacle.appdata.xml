@@ -263,6 +263,8 @@
       <li xml:lang="x-test">xxCapture Active Windowxx</li>
       <li xml:lang="zh-CN">截取当前活动窗口</li>
       <li xml:lang="zh-TW">擷取作用中的視窗</li>
+      <li>Capture Active Window To Clipboard</li>
+      <li xml:lang="fr">Capturer la fenêtre active et l'enregistrer dand le presse-papier</li>
       <li>Capture Rectangular Region</li>
       <li xml:lang="ca">Captura una regió rectangular</li>
       <li xml:lang="ca-valencia">Captura una regió rectangular</li>
