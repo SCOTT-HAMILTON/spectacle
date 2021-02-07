@@ -274,6 +274,7 @@ void KSWidget::captureModeChanged(int theIndex)
         }
         break;
     case Spectacle::CaptureMode::ActiveWindow:
+    case Spectacle::CaptureMode::ClipboardActiveWindow:
         mWindowDecorations->setEnabled(true);
         mCaptureTransientOnly->setEnabled(false);
         break;
@@ -281,6 +282,7 @@ void KSWidget::captureModeChanged(int theIndex)
     case Spectacle::CaptureMode::AllScreensScaled:
     case Spectacle::CaptureMode::CurrentScreen:
     case Spectacle::CaptureMode::RectangularRegion:
+    case Spectacle::CaptureMode::ClipboardRectangularRegion:
         mWindowDecorations->setEnabled(false);
         mCaptureTransientOnly->setEnabled(false);
         break;

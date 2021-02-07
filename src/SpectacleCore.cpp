@@ -109,8 +109,12 @@ void SpectacleCore::onActivateRequested(QStringList arguments, const QString& /*
         lCaptureMode = Spectacle::CaptureMode::CurrentScreen;
     } else if (parser->isSet(QStringLiteral("activewindow"))) {
         lCaptureMode = Spectacle::CaptureMode::ActiveWindow;
+    } else if (parser->isSet(QStringLiteral("clipboardactivewindow"))) {
+        lCaptureMode = Spectacle::CaptureMode::ClipboardActiveWindow;
     } else if (parser->isSet(QStringLiteral("region"))) {
         lCaptureMode = Spectacle::CaptureMode::RectangularRegion;
+    } else if (parser->isSet(QStringLiteral("clipboardregion"))) {
+        lCaptureMode = Spectacle::CaptureMode::ClipboardRectangularRegion;
     } else if (parser->isSet(QStringLiteral("windowundercursor"))) {
         lCaptureMode = Spectacle::CaptureMode::TransientWithParent;
     } else if (parser->isSet(QStringLiteral("transientonly"))) {
@@ -486,33 +490,35 @@ void SpectacleCore::doCopyPath(const QUrl &savedAt)
     }
 }
 
-<<<<<<< HEAD
+// By Scott Hamilton
 void SpectacleCore::setCopyToClipboard(bool theCopyToClipboard)
 {
        mCopyToClipboard = theCopyToClipboard;
-=======
+}
+
 void SpectacleCore::populateCommandLineParser(QCommandLineParser *lCmdLineParser)
 {
     lCmdLineParser->addOptions({
-        {{QStringLiteral("f"), QStringLiteral("fullscreen")},        i18n("Capture the entire desktop (default)")},
-        {{QStringLiteral("m"), QStringLiteral("current")},           i18n("Capture the current monitor")},
-        {{QStringLiteral("a"), QStringLiteral("activewindow")},      i18n("Capture the active window")},
-        {{QStringLiteral("u"), QStringLiteral("windowundercursor")}, i18n("Capture the window currently under the cursor, including parents of pop-up menus")},
-        {{QStringLiteral("t"), QStringLiteral("transientonly")},     i18n("Capture the window currently under the cursor, excluding parents of pop-up menus")},
-        {{QStringLiteral("r"), QStringLiteral("region")},            i18n("Capture a rectangular region of the screen")},
-        {{QStringLiteral("g"), QStringLiteral("gui")},               i18n("Start in GUI mode (default)")},
-        {{QStringLiteral("b"), QStringLiteral("background")},        i18n("Take a screenshot and exit without showing the GUI")},
-        {{QStringLiteral("s"), QStringLiteral("dbus")},              i18n("Start in DBus-Activation mode")},
-        {{QStringLiteral("n"), QStringLiteral("nonotify")},          i18n("In background mode, do not pop up a notification when the screenshot is taken")},
-        {{QStringLiteral("o"), QStringLiteral("output")},            i18n("In background mode, save image to specified file"), QStringLiteral("fileName")},
-        {{QStringLiteral("d"), QStringLiteral("delay")},             i18n("In background mode, delay before taking the shot (in milliseconds)"), QStringLiteral("delayMsec")},
-        {{QStringLiteral("c"), QStringLiteral("clipboard")},         i18n("In background mode, copy screenshot to clipboard")},
-        {{QStringLiteral("w"), QStringLiteral("onclick")},           i18n("Wait for a click before taking screenshot. Invalidates delay")},
-        {{QStringLiteral("i"), QStringLiteral("new-instance")},      i18n("Starts a new GUI instance of spectacle without registering to DBus")},
-        {{QStringLiteral("p"), QStringLiteral("pointer")},           i18n("In background mode, include pointer in the screenshot")},
-        {{QStringLiteral("e"),QStringLiteral("no-decoration")},     i18n("In background mode, exclude decorations in the screenshot")},
+        {{QStringLiteral("f"), QStringLiteral("fullscreen")},              i18n("Capture the entire desktop (default)")},
+        {{QStringLiteral("m"), QStringLiteral("current")},                 i18n("Capture the current monitor")},
+        {{QStringLiteral("a"), QStringLiteral("activewindow")},            i18n("Capture the active window")},
+        {{QStringLiteral("ca"), QStringLiteral("clipboardactivewindow")},  i18n("Capture the active window and copy to clipboard")},
+        {{QStringLiteral("u"), QStringLiteral("windowundercursor")},       i18n("Capture the window currently under the cursor, including parents of pop-up menus")},
+        {{QStringLiteral("t"), QStringLiteral("transientonly")},           i18n("Capture the window currently under the cursor, excluding parents of pop-up menus")},
+        {{QStringLiteral("r"), QStringLiteral("region")},                  i18n("Capture a rectangular region of the screen")},
+        {{QStringLiteral("cr"), QStringLiteral("clipboardregion")},        i18n("Capture a rectangular region of the screen and copy to clipboard")},
+        {{QStringLiteral("g"), QStringLiteral("gui")},                     i18n("Start in GUI mode (default)")},
+        {{QStringLiteral("b"), QStringLiteral("background")},              i18n("Take a screenshot and exit without showing the GUI")},
+        {{QStringLiteral("s"), QStringLiteral("dbus")},                    i18n("Start in DBus-Activation mode")},
+        {{QStringLiteral("n"), QStringLiteral("nonotify")},                i18n("In background mode, do not pop up a notification when the screenshot is taken")},
+        {{QStringLiteral("o"), QStringLiteral("output")},                  i18n("In background mode, save image to specified file"), QStringLiteral("fileName")},
+        {{QStringLiteral("d"), QStringLiteral("delay")},                   i18n("In background mode, delay before taking the shot (in milliseconds)"), QStringLiteral("delayMsec")},
+        {{QStringLiteral("c"), QStringLiteral("clipboard")},               i18n("In background mode, copy screenshot to clipboard")},
+        {{QStringLiteral("w"), QStringLiteral("onclick")},                 i18n("Wait for a click before taking screenshot. Invalidates delay")},
+        {{QStringLiteral("i"), QStringLiteral("new-instance")},            i18n("Starts a new GUI instance of spectacle without registering to DBus")},
+        {{QStringLiteral("p"), QStringLiteral("pointer")},                 i18n("In background mode, include pointer in the screenshot")},
+        {{QStringLiteral("e"),QStringLiteral("no-decoration")},            i18n("In background mode, exclude decorations in the screenshot")},
     });
->>>>>>> upstream/master
 }
 
 void SpectacleCore::doStartDragAndDrop()
