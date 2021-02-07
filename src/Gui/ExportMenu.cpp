@@ -19,11 +19,11 @@
 
 #include "ExportMenu.h"
 #include "spectacle_gui_debug.h"
-#include "Config.h"
 
 #include <KLocalizedString>
-#include <KMimeTypeTrader>
-#include <KRun>
+#include <KApplicationTrader>
+#include <KIO/ApplicationLauncherJob>
+#include <KNotificationJobUiDelegate>
 #include <KStandardShortcut>
 #ifdef KIPI_FOUND
 #include <KIPI/Plugin>
@@ -77,7 +77,7 @@ void ExportMenu::getKServiceItems()
     // populate all locally installed applications and services
     // which can handle images first
 
-    const KService::List services = KMimeTypeTrader::self()->query(QStringLiteral("image/png"));
+    const KService::List services = KApplicationTrader::queryByMimeType(QStringLiteral("image/png"));
 
     for (auto service : services) {
         QString name = service->name().replace(QLatin1Char('&'), QLatin1String("&&"));
@@ -86,8 +86,14 @@ void ExportMenu::getKServiceItems()
         connect(action, &QAction::triggered, this, [=]() {
             const QUrl filename = mExportManager->getAutosaveFilename();
             mExportManager->doSave(filename);
-            QList<QUrl> whereIs({ filename });
-            KRun::runService(*service, whereIs, parentWidget(), true);
+
+            auto *job = new KIO::ApplicationLauncherJob(service);
+            auto *delegate = new KNotificationJobUiDelegate;
+            delegate->setAutoErrorHandlingEnabled(true);
+            job->setUiDelegate(delegate);
+
+            job->setUrls({filename});
+            job->start();
         });
         addAction(action);
     }
@@ -105,7 +111,10 @@ void ExportMenu::getKServiceItems()
         const QUrl filename = mExportManager->getAutosaveFilename();
         mExportManager->doSave(filename);
         QList<QUrl> whereIs({ filename });
-        KRun::displayOpenWithDialog(whereIs, parentWidget(), true);
+        auto job = new KIO::ApplicationLauncherJob;
+        job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled));
+        job->setUrls({filename});
+        job->start();
     });
     addAction(openWith);
 }
@@ -165,6 +174,7 @@ void ExportMenu::getKipiItems()
     if (mKipiMenu->isEmpty()) {
         mKipiMenu->addAction(i18n("No KIPI plugins available"))->setEnabled(false);
     }
+    delete loader;
 }
 #endif
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2015 Boudhayan Gupta <bgupta@kde.org>
+ *  Copyright (C) 2020 Méven Car <meven.car@enioka.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -17,28 +17,25 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#ifndef GENERALOPTIONSPAGE_H
-#define GENERALOPTIONSPAGE_H
+#include <QPoint>
 
-#include <QScopedPointer>
-#include <QWidget>
+#ifndef COMPARABLEQPOINT_H
+#define COMPARABLEQPOINT_H
 
-class Ui_GeneralOptions;
 
-class GeneralOptionsPage : public QWidget
+class ComparableQPoint : public QPoint
 {
-    Q_OBJECT
+public:
+    ComparableQPoint(const QPoint &point): QPoint(point.x(), point.y())
+    {}
 
-    public:
+    ComparableQPoint(): QPoint()
+    {}
 
-    explicit GeneralOptionsPage(QWidget *parent = nullptr);
-    ~GeneralOptionsPage() override;
-
-    private:
-
-    void updateAutomaticActions();
-
-    QScopedPointer<Ui_GeneralOptions> m_ui;
+    // utility class that allows using QMap to sort its keys when they are QPoint
+    bool operator<(const ComparableQPoint &other) const {
+        return x() < other.x() || ( x() == other.x() && y() < other.y() );
+    }
 };
 
-#endif // GENERALOPTIONSPAGE_H
+#endif // COMPARABLEQPOINT_H

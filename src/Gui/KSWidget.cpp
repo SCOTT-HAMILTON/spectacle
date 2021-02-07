@@ -25,6 +25,7 @@
 #include "settings.h"
 #include "SmartSpinBox.h"
 #include "ProgressButton.h"
+#include "ExportManager.h"
 
 #include <QAction>
 #include <QApplication>
@@ -34,7 +35,11 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QShortcut>
-#include <QToolButton>
+#include <QStackedLayout>
+
+#ifdef KIMAGEANNOTATOR_FOUND
+#include <kImageAnnotator/KImageAnnotator.h>
+#endif
 
 #include <KConfigDialogManager>
 #include <KLocalizedString>
@@ -42,30 +47,46 @@
 KSWidget::KSWidget(Platform::GrabModes theGrabModes, QWidget *parent)
     : QWidget(parent)
 {
+    mStack = new QStackedLayout(this);
+
     // we'll init the widget that holds the image first
     mImageWidget = new KSImageWidget(this);
     mImageWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     connect(mImageWidget, &KSImageWidget::dragInitiated, this, &KSWidget::dragInitiated);
 
+#ifdef KIMAGEANNOTATOR_FOUND
+    mAnnotator = new kImageAnnotator::KImageAnnotator();
+    mAnnotator->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mStack->addWidget(mAnnotator);
+#endif
+
     // the capture mode options first
     mCaptureModeLabel = new QLabel(i18n("<b>Capture Mode</b>"), this);
     mCaptureArea = new QComboBox(this);
-    QString lFullScreenLabel = QApplication::screens().count() == 1
-            ? i18n("Full Screen")
-            : i18n("Full Screen (All Monitors)");
 
     if (theGrabModes.testFlag(Platform::GrabMode::AllScreens)) {
+
+        QString lFullScreenLabel = QApplication::screens().count() == 1
+                ? i18n("Full Screen")
+                : i18n("Full Screen (All Monitors)");
+
         mCaptureArea->insertItem(0, lFullScreenLabel, Spectacle::CaptureMode::AllScreens);
-        mCaptureArea->insertItem(1, i18n("Rectangular Region"), Spectacle::CaptureMode::RectangularRegion);
+    }
+    if (theGrabModes.testFlag(Platform::GrabMode::AllScreensScaled) &&  QApplication::screens().count() > 1) {
+        QString lFullScreenLabel = i18n("Full Screen (All Monitors, scaled)");
+        mCaptureArea->insertItem(1, lFullScreenLabel, Spectacle::CaptureMode::AllScreensScaled);
+    }
+    if (theGrabModes.testFlag(Platform::GrabMode::PerScreenImageNative)) {
+        mCaptureArea->insertItem(2, i18n("Rectangular Region"), Spectacle::CaptureMode::RectangularRegion);
     }
     if (theGrabModes.testFlag(Platform::GrabMode::CurrentScreen)) {
-        mCaptureArea->insertItem(2, i18n("Current Screen"), Spectacle::CaptureMode::CurrentScreen);
+        mCaptureArea->insertItem(3, i18n("Current Screen"), Spectacle::CaptureMode::CurrentScreen);
     }
     if (theGrabModes.testFlag(Platform::GrabMode::ActiveWindow)) {
-        mCaptureArea->insertItem(3, i18n("Active Window"), Spectacle::CaptureMode::ActiveWindow);
+        mCaptureArea->insertItem(4, i18n("Active Window"), Spectacle::CaptureMode::ActiveWindow);
     }
     if (theGrabModes.testFlag(Platform::GrabMode::WindowUnderCursor)) {
-        mCaptureArea->insertItem(4, i18n("Window Under Cursor"), Spectacle::CaptureMode::WindowUnderCursor);
+        mCaptureArea->insertItem(5, i18n("Window Under Cursor"), Spectacle::CaptureMode::WindowUnderCursor);
     }
     if (theGrabModes.testFlag(Platform::GrabMode::TransientWithParent)) {
         mTransientWithParentAvailable = true;
@@ -158,7 +179,8 @@ KSWidget::KSWidget(Platform::GrabModes theGrabModes, QWidget *parent)
     mRightLayout->addWidget(mTakeScreenshotButton, 1, Qt::AlignHCenter);
     mRightLayout->setContentsMargins(10, 0, 0, 10);
 
-    mMainLayout = new QGridLayout(this);
+    mMainLayout = new QGridLayout();
+
     mMainLayout->addWidget(mImageWidget, 0, 0, 1, 1);
     mMainLayout->addLayout(mRightLayout, 0, 1, 1, 1);
     mMainLayout->setColumnMinimumWidth(0, 320);
@@ -168,6 +190,15 @@ KSWidget::KSWidget(Platform::GrabModes theGrabModes, QWidget *parent)
     mCaptureArea->setCurrentIndex(index >= 0 ? index : 0);
     auto mConfigManager = new KConfigDialogManager(this, Settings::self());
     connect(mConfigManager, &KConfigDialogManager::widgetModified, mConfigManager, &KConfigDialogManager::updateSettings);
+
+    placeHolder = new QWidget();
+    placeHolder->setLayout(mMainLayout);
+
+    mStack->addWidget(placeHolder);
+
+#ifdef KIMAGEANNOTATOR_FOUND
+    mStack->addWidget(mAnnotator);
+#endif
 }
 
 int KSWidget::imagePaddingWidth() const
@@ -202,8 +233,7 @@ void KSWidget::lockOnClickEnabled()
 
 void KSWidget::lockOnClickDisabled()
 {
-    mCaptureOnClick->setCheckState(Qt::Unchecked);
-    mCaptureOnClick->setEnabled(false);
+    mCaptureOnClick->hide();
     mDelayMsec->setEnabled(true);
 }
 
@@ -248,6 +278,7 @@ void KSWidget::captureModeChanged(int theIndex)
         mCaptureTransientOnly->setEnabled(false);
         break;
     case Spectacle::CaptureMode::AllScreens:
+    case Spectacle::CaptureMode::AllScreensScaled:
     case Spectacle::CaptureMode::CurrentScreen:
     case Spectacle::CaptureMode::RectangularRegion:
         mWindowDecorations->setEnabled(false);
@@ -281,3 +312,21 @@ void KSWidget::setProgress(double progress)
     mTakeScreenshotButton->setProgress(progress);
 }
 
+#ifdef KIMAGEANNOTATOR_FOUND
+void KSWidget::showAnnotator()
+{
+    mStack->setCurrentIndex(1);
+    QPixmap px = ExportManager::instance()->pixmap();
+    px.setDevicePixelRatio(qApp->devicePixelRatio());
+    mAnnotator->loadImage(px);
+}
+
+void KSWidget::hideAnnotator()
+{
+    mStack->setCurrentIndex(0);
+    QImage image = mAnnotator->image();
+    QPixmap px = QPixmap::fromImage(image);
+    setScreenshotPixmap(px);
+    ExportManager::instance()->setPixmap(px);
+}
+#endif

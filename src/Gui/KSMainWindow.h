@@ -26,6 +26,7 @@
 #include <QFrame>
 #include <QToolButton>
 #include <QDialogButtonBox>
+#include <QStackedLayout>
 
 #include <KMessageWidget>
 #include <KNS3/KMoreToolsMenuFactory>
@@ -35,6 +36,7 @@
 #include "KSWidget.h"
 #include "ExportMenu.h"
 #include "Platforms/Platform.h"
+#include "Config.h"
 
 #include <memory>
 
@@ -84,6 +86,7 @@ class KSMainWindow: public QDialog
     void setScreenshotAndShow(const QPixmap &pixmap);
     void imageSaved(const QUrl &location);
     void imageSavedAndCopied(const QUrl &location);
+    void screenshotFailed();
 
     Q_SIGNALS:
 
@@ -118,4 +121,10 @@ class KSMainWindow: public QDialog
     ExportMenu       *mExportMenu;
     Platform::ShutterModes mShutterModes;
     QTimer           *mHideMessageWidgetTimer;
+    QStackedLayout   *mStack;
+
+#ifdef KIMAGEANNOTATOR_FOUND
+    QToolButton      *mAnnotateButton;
+    bool             mAnnotatorActive;
+#endif
 };

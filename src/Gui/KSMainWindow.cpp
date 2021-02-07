@@ -22,7 +22,6 @@
 
 #include "KSMainWindow.h"
 
-#include "Config.h"
 #include "settings.h"
 #include "SettingsDialog/SettingsDialog.h"
 #include "SettingsDialog/GeneralOptionsPage.h"
@@ -51,7 +50,8 @@
 #include <KGuiItem>
 #include <KHelpMenu>
 #include <KIO/OpenFileManagerWindowJob>
-#include <KRun>
+#include <KIO/OpenUrlJob>
+#include <KIO/JobUiDelegate>
 #include <KLocalizedString>
 #include <KConfigGroup>
 #include <KSharedConfig>
@@ -80,6 +80,10 @@ KSMainWindow::KSMainWindow(Platform::GrabModes theGrabModes, Platform::ShutterMo
     mScreenRecorderToolsMenu(new QMenu(this)),
     mExportMenu(new ExportMenu(this)),
     mShutterModes(theShutterModes)
+#ifdef KIMAGEANNOTATOR_FOUND
+    ,mAnnotateButton(new QToolButton(this))
+    ,mAnnotatorActive(false)
+#endif
 {
     // before we do anything, we need to set a window property
     // that skips the close/hide window animation on kwin. this
@@ -151,6 +155,32 @@ void KSMainWindow::init()
     mConfigureButton->setToolTip(i18n("Change Spectacle's settings."));
     mConfigureButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     mDialogButtonBox->addButton(mConfigureButton, QDialogButtonBox::ResetRole);
+
+#ifdef KIMAGEANNOTATOR_FOUND
+    mAnnotateButton->setText(i18n("Annotate"));
+    mAnnotateButton->setToolTip(i18n("Add annotation to the screenshot"));
+    mAnnotateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    mAnnotateButton->setIcon(QIcon::fromTheme(QStringLiteral("document-edit")));
+    connect(mAnnotateButton, &QToolButton::clicked, this, [this] {
+
+        if (mAnnotatorActive) {
+            mKSWidget->hideAnnotator();
+            mAnnotateButton->setText(i18n("Annotate"));
+        } else {
+            mKSWidget->showAnnotator();
+            mAnnotateButton->setText(i18n("Annotation done"));
+        }
+
+        mToolsButton->setEnabled(mAnnotatorActive);
+        mSendToButton->setEnabled(mAnnotatorActive);
+        mClipboardButton->setEnabled(mAnnotatorActive);
+        mSaveButton->setEnabled(mAnnotatorActive);
+
+        mAnnotatorActive = !mAnnotatorActive;
+    });
+
+    mDialogButtonBox->addButton(mAnnotateButton, QDialogButtonBox::ActionRole);
+#endif
 
     KGuiItem::assign(mToolsButton, KGuiItem(i18n("Tools")));
     mToolsButton->setIcon(QIcon::fromTheme(QStringLiteral("tools"),
@@ -372,7 +402,9 @@ void KSMainWindow::showPrintDialog()
 
 void KSMainWindow::openScreenshotsFolder()
 {
-    new KRun(Settings::defaultSaveLocation(), this);
+    auto job = new KIO::OpenUrlJob(Settings::defaultSaveLocation());
+    job->setUiDelegate(new KIO::JobUiDelegate(KIO::JobUiDelegate::AutoHandlingEnabled, this));
+    job->start();
 }
 
 void KSMainWindow::quit(const QuitBehavior quitBehavior)
@@ -456,6 +488,12 @@ void KSMainWindow::imageCopied()
 {
     showInlineMessage(i18n("The screenshot has been copied to the clipboard."),
                       KMessageWidget::Information);
+}
+
+void KSMainWindow::screenshotFailed()
+{
+    showInlineMessage(i18n("Could not take a screenshot. Please report this bug here: <a href=\"https://bugs.kde.org/enter_bug.cgi?product=Spectacle\">create a spectacle bug</a>"),
+                      KMessageWidget::Warning);
 }
 
 void KSMainWindow::showPreferencesDialog()

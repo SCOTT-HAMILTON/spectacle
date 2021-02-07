@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QObject>
+#include <QCommandLineParser>
 
 #include "ExportManager.h"
 #include "Gui/KSMainWindow.h"
@@ -51,23 +52,19 @@ class SpectacleCore: public QObject
         Background = 2
     };
 
-    explicit SpectacleCore(StartMode theStartMode,
-                           Spectacle::CaptureMode theCaptureMode,
-                           QString &theSaveFileName,
-                           qint64 theDelayMsec,
-                           bool theNotifyOnGrab,
-                           bool theCopyToClipboard,
-                           QObject *parent = nullptr);
+    explicit SpectacleCore(QObject *parent = nullptr);
     virtual ~SpectacleCore() = default;
+    void init();
 
     QString filename() const;
     void setFilename(const QString &filename);
+
+    void populateCommandLineParser(QCommandLineParser *lCmdLineParser);
 
     Q_SIGNALS:
 
     void errorMessage(const QString &errString);
     void allDone();
-    void filenameChanged(const QString &filename);
     void grabFailed();
 
     public Q_SLOTS:
@@ -75,17 +72,19 @@ class SpectacleCore: public QObject
     void takeNewScreenshot(Spectacle::CaptureMode theCaptureMode, int theTimeout, bool theIncludePointer, bool theIncludeDecorations);
     void showErrorMessage(const QString &theErrString);
     void screenshotUpdated(const QPixmap &thePixmap);
+    void screenshotsUpdated(const QVector<QImage> &imgs);
+    void screenshotCanceled();
     void screenshotFailed();
-    void dbusStartAgent();
     void doStartDragAndDrop();
     void doNotify(const QUrl &theSavedAt);
     void doCopyPath(const QUrl &savedAt);
     void setCopyToClipboard(bool theCopyToClipboard);
 
+    void onActivateRequested(QStringList arguments, const QString& /*workingDirectory */);
+
     private:
 
-
-    void initGui(bool theIncludePointer, bool theIncludeDecorations);
+    void initGui(int theDelay, bool theIncludePointer, bool theIncludeDecorations);
     Platform::GrabMode toPlatformGrabMode(Spectacle::CaptureMode theCaptureMode);
     void setUpShortcuts();
 
@@ -98,5 +97,6 @@ class SpectacleCore: public QObject
     EditorPtr     mQuickEditor;
     bool          mIsGuiInited;
     bool          mCopyToClipboard;
+    bool          mSaveToOutput;
     KWayland::Client::PlasmaShell *mWaylandPlasmashell;
 };

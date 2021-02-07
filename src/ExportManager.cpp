@@ -45,6 +45,7 @@
 #include <KIO/MkpathJob>
 #include <KIO/FileCopyJob>
 #include <KIO/StatJob>
+#include <KRecentDocument>
 
 
 
@@ -171,7 +172,7 @@ QString ExportManager::formatFilename(const QString &nameTemplate)
 {
     const QDateTime timestamp = mPixmapTimestamp;
     QString baseName = nameTemplate;
-    const QString baseDir = defaultSaveLocation();
+    QString baseDir = defaultSaveLocation();
     QString title;
 
     if (mCaptureMode == Spectacle::CaptureMode::ActiveWindow ||
@@ -200,7 +201,9 @@ QString ExportManager::formatFilename(const QString &nameTemplate)
     paddingRE.setPattern(QStringLiteral("%(\\d*)d"));
     QRegularExpressionMatchIterator it = paddingRE.globalMatch(result);
     if (it.hasNext()) {
-        QString resultCopy = QRegularExpression::escape(result);
+        // strip any subdirectories from the template to construct the filename matching regex
+        // we are matching filenames only, not paths
+        QString resultCopy = QRegularExpression::escape(result.section(QLatin1Char('/'), -1));
         QVector<QRegularExpressionMatch> matches;
         while (it.hasNext()) {
             QRegularExpressionMatch paddingMatch = it.next();
@@ -212,6 +215,12 @@ QString ExportManager::formatFilename(const QString &nameTemplate)
             }
             QString escapedMatch = QRegularExpression::escape(paddingMatch.captured());
             resultCopy.replace(escapedMatch, QStringLiteral("(\\d{%1,})").arg(QString::number(paddedLength)));
+        }
+        if (result.contains(QLatin1Char('/'))) {
+          // In case the filename template contains a subdirectory,
+          // we need to search for files in the subdirectory instead of the baseDir.
+          // so let's add that to baseDir before we search for files.
+          baseDir += QStringLiteral("/%1").arg(result.section(QLatin1Char('/'), 0, -2));
         }
         // search save directory for files
         QDir dir(baseDir);
@@ -429,10 +438,16 @@ bool ExportManager::save(const QUrl &url)
     }
 
     QString mimetype = makeSaveMimetype(url);
+    bool saveSucceded = false;
     if (url.isLocalFile()) {
-        return localSave(url, mimetype);
+         saveSucceded = localSave(url, mimetype);
+    } else {
+        saveSucceded = remoteSave(url, mimetype);
     }
-    return remoteSave(url, mimetype);
+    if (saveSucceded) {
+        KRecentDocument::add(url, QGuiApplication::desktopFileName());
+    }
+    return saveSucceded;
 }
 
 bool ExportManager::isFileExists(const QUrl &url) const
@@ -440,11 +455,7 @@ bool ExportManager::isFileExists(const QUrl &url) const
     if (!(url.isValid())) {
         return false;
     }
-#if KIO_VERSION < QT_VERSION_CHECK(5, 69, 0)
-    KIO::StatJob * existsJob = KIO::stat(url, KIO::StatJob::DestinationSide, 0);
-#else
-    KIO::StatJob * existsJob = KIO::statDetails(url, KIO::StatJob::DestinationSide, KIO::StatNoDetails);
-#endif
+    KIO::StatJob * existsJob = KIO::statDetails(url, KIO::StatJob::DestinationSide, KIO::StatNoDetails, KIO::HideProgressInfo);
 
     existsJob->exec();
 

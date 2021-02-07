@@ -1,7 +1,7 @@
 
 # KDE Application Version, managed by release script
-set(RELEASE_SERVICE_VERSION_MAJOR "20")
-set(RELEASE_SERVICE_VERSION_MINOR "07")
+set(RELEASE_SERVICE_VERSION_MAJOR "21")
+set(RELEASE_SERVICE_VERSION_MINOR "03")
 set(RELEASE_SERVICE_VERSION_MICRO "70")
 set(RELEASE_SERVICE_VERSION "${RELEASE_SERVICE_VERSION_MAJOR}.${RELEASE_SERVICE_VERSION_MINOR}.${RELEASE_SERVICE_VERSION_MICRO}")
 set(SPECTACLE_VERSION ${RELEASE_SERVICE_VERSION})
@@ -11,8 +11,8 @@ cmake_minimum_required (VERSION 3.5 FATAL_ERROR)
 # Spectacle project
 project(Spectacle VERSION ${SPECTACLE_VERSION})
 
-set(QT_MIN_VERSION     "5.10.0")
-set(KF5_MIN_VERSION    "5.56.0")
+set(QT_MIN_VERSION     "5.12.0")
+set(KF5_MIN_VERSION    "5.73.0")
 
 find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
 set(
@@ -49,6 +49,7 @@ find_package(
         Widgets
         DBus
         PrintSupport
+        Svg
         Test
 )
 
@@ -104,6 +105,14 @@ if(NOT XCB_CURSOR_FOUND)
 	set(XCB_COMPONENTS_FOUND FALSE)
 endif()
 
+find_package(kImageAnnotator)
+
+if(kImageAnnotator_FOUND)
+    find_package(X11 REQUIRED)
+    find_package(kColorPicker REQUIRED)
+    set(KIMAGEANNOTATOR_FOUND 1)
+endif()
+
 # fail build if none of the platform backends can be found
 if (NOT XCB_FOUND OR NOT XCB_COMPONENTS_FOUND)
     message(FATAL_ERROR "No suitable backend platform was found. Currently supported platforms are: XCB Components Required: ${XCB_COMPONENTS_ERRORS}")
@@ -121,11 +130,8 @@ add_subdirectory(icons)
 add_subdirectory(doc)
 add_subdirectory(tests)
 
-if (${ECM_VERSION} STRGREATER "5.58.0")
-    install(FILES spectacle.categories  DESTINATION  ${KDE_INSTALL_LOGGINGCATEGORIESDIR})
-else()
-    install(FILES spectacle.categories  DESTINATION ${KDE_INSTALL_CONFDIR})
-endif()
+ecm_qt_install_logging_categories(EXPORT SPECTACLE FILE spectacle.categories DESTINATION ${KDE_INSTALL_LOGGINGCATEGORIESDIR})
+
 # summaries
 
 feature_summary(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)

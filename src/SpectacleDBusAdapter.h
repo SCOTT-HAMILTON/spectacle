@@ -53,7 +53,7 @@ class SpectacleDBusAdapter: public QDBusAbstractAdaptor
         "    <method name=\"RectangularRegion\">\n"
         "      <arg direction=\"in\" type=\"b\" name=\"includeMousePointer\"/>\n"
         "    </method>\n"
-	"    <method name=\"ClipboardRectangularRegion\">\n"
+		"    <method name=\"ClipboardRectangularRegion\">\n"
         "      <arg direction=\"in\" type=\"b\" name=\"includeMousePointer\"/>\n"
         "    </method>\n"
         "    <signal name=\"ScreenshotTaken\">\n"
@@ -64,7 +64,6 @@ class SpectacleDBusAdapter: public QDBusAbstractAdaptor
         "  </interface>\n"
         ""
     )
-
     public:
 
     SpectacleDBusAdapter(SpectacleCore *parent);
@@ -74,7 +73,6 @@ class SpectacleDBusAdapter: public QDBusAbstractAdaptor
 
     public Q_SLOTS:
 
-    Q_NOREPLY void StartAgent();
     Q_NOREPLY void FullScreen(bool includeMousePointer);
     Q_NOREPLY void CurrentScreen(bool includeMousePointer);
     Q_NOREPLY void ActiveWindow(bool includeWindowDecorations, bool includeMousePointer);

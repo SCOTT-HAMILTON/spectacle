@@ -109,14 +109,14 @@ int main(int argc, char **argv)
     QAction* openAction = shortCutActions.action(QStringLiteral("_launch"));
     KGlobalAccel::self()->setDefaultShortcut(openAction, {Qt::Key_Print});
     QAction* fullScreenAction = shortCutActions.action(QStringLiteral("FullScreenScreenShot"));
-    KGlobalAccel::self()->setDefaultShortcut(fullScreenAction, {Qt::SHIFT + Qt::Key_Print});
+    KGlobalAccel::self()->setDefaultShortcut(fullScreenAction, {Qt::SHIFT | Qt::Key_Print});
     //QAction* currentScreenAction = shortCutActions.action(QStringLiteral("CurrentMonitorScreenShot"));
     QAction* activeWindowAction = shortCutActions.action(QStringLiteral("ActiveWindowScreenShot"));
-    KGlobalAccel::self()->setDefaultShortcut(activeWindowAction, {Qt::META + Qt::Key_Print});
+    KGlobalAccel::self()->setDefaultShortcut(activeWindowAction, {Qt::META | Qt::Key_Print});
     QAction* activeWindowClipboardAction = shortCutActions.action(QStringLiteral("ClipboardActiveWindowScreenShot"));
     KGlobalAccel::self()->setDefaultShortcut(activeWindowClipboardAction, {Qt::CTRL + Qt::ALT + Qt::Key_Print});
     QAction* regionAction = shortCutActions.action(QStringLiteral("RectangularRegionScreenShot"));
-    KGlobalAccel::self()->setDefaultShortcut(regionAction, {Qt::META + Qt::SHIFT + Qt::Key_Print});
+    KGlobalAccel::self()->setDefaultShortcut(regionAction, {Qt::META | Qt::SHIFT | Qt::Key_Print});
 
     QAction* regionClipboardAction = shortCutActions.action(QStringLiteral("ClipboardRectangularRegionScreenShot"));
     KGlobalAccel::self()->setDefaultShortcut(regionClipboardAction, {Qt::CTRL + Qt::SHIFT + Qt::Key_Print});
